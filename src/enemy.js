@@ -1,36 +1,41 @@
-import { getMicroFrame } from './kenney.js';
-
 // ─── Tipos de inimigos ────────────────────────────────────────────────────────
-// Tiles micro-roguelike: 8×8px → scale dobrado em relação aos sprites 16×16 antigos
 
 const ENEMY_TYPES = {
   normal: {
-    size: 28, color: 0xe53935,
+    size: 30, color: 0xe53935,
     speed: 90,  hp: 3,  xp: 20, damage: 1,
     showHpBar: false,
-    assetKey: 'enemy_normal',
-    scale: 3,    // 8px × 3 = 24px visual
+    idleKey: 'toon_enemy_normal_idle',
+    walkAnim: 'toon_enemy_normal_walk',
+    idleAnim: 'toon_enemy_normal_idle',
+    scale: 0.30,
   },
   fast: {
-    size: 16, color: 0xff9800,
+    size: 24, color: 0xff9800,
     speed: 170, hp: 1,  xp: 15, damage: 1,
     showHpBar: false,
-    assetKey: 'enemy_fast',
-    scale: 2.4,  // 8px × 2.4 ≈ 19px visual
+    idleKey: 'toon_enemy_fast_idle',
+    walkAnim: 'toon_enemy_fast_walk',
+    idleAnim: 'toon_enemy_fast_idle',
+    scale: 0.25,
   },
   tank: {
-    size: 42, color: 0x7b1fa2,
+    size: 40, color: 0x7b1fa2,
     speed: 38,  hp: 10, xp: 60, damage: 2,
     showHpBar: true,
-    assetKey: 'enemy_tank',
-    scale: 4,    // 8px × 4 = 32px visual
+    idleKey: 'toon_enemy_tank_idle',
+    walkAnim: 'toon_enemy_tank_walk',
+    idleAnim: 'toon_enemy_tank_idle',
+    scale: 0.42,
   },
   elite: {
-    size: 36, color: 0xffd600,
+    size: 34, color: 0xffd600,
     speed: 62,  hp: 15, xp: 120, damage: 2,
     showHpBar: true,
-    assetKey: 'enemy_elite',
-    scale: 3.6,  // 8px × 3.6 = 29px visual
+    idleKey: 'toon_enemy_elite_idle',
+    walkAnim: 'toon_enemy_elite_walk',
+    idleAnim: 'toon_enemy_elite_idle',
+    scale: 0.38,
   },
 };
 
@@ -56,9 +61,9 @@ class Enemy {
     this.alive   = true;
     this._isKnockedBack = false;
 
-    // Tiles micro-roguelike: 8×8px, scale em ENEMY_TYPES compensa o tamanho
-    this.sprite = scene.physics.add.sprite(x, y, 'micro', getMicroFrame(def.assetKey));
+    this.sprite = scene.physics.add.sprite(x, y, def.idleKey);
     this.sprite.setScale(def.scale);
+    this.sprite.play(def.idleAnim);
 
     // Barra de HP para tipos com showHpBar
     if (def.showHpBar) {
@@ -123,7 +128,7 @@ class Enemy {
   }
 
   _spawnDeathFX(x, y) {
-    const textureKey = `enemy_${this.typeName}`;
+    const textureKey = ENEMY_TYPES[this.typeName].idleKey;
     const radius     = this.typeName === 'tank' || this.typeName === 'elite' ? 24 : 14;
     const count      = this.typeName === 'tank' ? 18 : (this.typeName === 'elite' ? 20 : 12);
 
@@ -166,11 +171,18 @@ class Enemy {
     const dy  = target.y - this.sprite.y;
     const len = Math.sqrt(dx * dx + dy * dy);
 
+    const def = ENEMY_TYPES[this.typeName];
+
     if (len > 0) {
       this.sprite.body.setVelocity(
         (dx / len) * this.speed,
         (dy / len) * this.speed,
       );
+      if (this.sprite.anims.currentAnim?.key !== def.walkAnim) {
+        this.sprite.play(def.walkAnim);
+      }
+      if (dx < 0) this.sprite.setFlipX(true);
+      else if (dx > 0) this.sprite.setFlipX(false);
     }
   }
 

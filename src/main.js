@@ -1,6 +1,6 @@
 import 'phaser';
 
-import { loadKenneySprites } from './kenney.js';
+import { loadKenneySprites, loadToonSprites, createToonAnims } from './kenney.js';
 import { preloadAllAssets } from './assets.js';
 import { StatsTracker } from './stats.js';
 import { CombatSystem } from './combat.js';
@@ -22,10 +22,12 @@ class MainScene extends Phaser.Scene {
 
   create() {
     loadKenneySprites(this);
+    loadToonSprites(this);
     this.load.start();
 
     this.load.once('complete', () => {
       preloadAllAssets(this);
+      createToonAnims(this);
       this._initGame();
     });
   }

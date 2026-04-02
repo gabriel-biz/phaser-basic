@@ -1,21 +1,15 @@
 // ─── Mapeamento de nomes lógicos → índice de frame no spritesheet micro ──────
-// Spritesheet: colored_tilemap_packed.png (128×80px, 16×10 tiles de 8×8px cada)
-// Índice = linha * 16 + coluna
 const MICRO_FRAMES = {
-  player:       4,   // linha 0, col 4  – guerreiro laranja/amarelo
-  enemy_normal: 13,  // linha 0, col 13 – monstro vermelho com olho amarelo
-  enemy_fast:   14,  // linha 0, col 14 – humanoide laranja/roxo
-  enemy_tank:   20,  // linha 1, col 4  – goblin verde
-  enemy_elite:  27,  // linha 1, col 11 – demônio roxo/laranja
-  bullet:       99,  // linha 6, col 3  – orbe mágico laranja
-  coin:         39,  // linha 2, col 7  – lanterna dourada (orbe de XP)
-  heart:        102, // linha 6, col 6  – coração vermelho
+  player:       4,
+  enemy_normal: 13,
+  enemy_fast:   14,
+  enemy_tank:   20,
+  enemy_elite:  27,
+  bullet:       99,
+  coin:         39,
+  heart:        102,
 };
 
-/**
- * Carrega o spritesheet kenney_micro-roguelike na cena.
- * @param {Phaser.Scene} scene
- */
 function loadKenneySprites(scene) {
   scene.load.spritesheet(
     'micro',
@@ -24,16 +18,88 @@ function loadKenneySprites(scene) {
   );
 }
 
-/**
- * Retorna o índice de frame no spritesheet 'micro' para o nome dado.
- * @param {string} name
- * @returns {number}
- */
 function getMicroFrame(name) {
   return MICRO_FRAMES[name] ?? 0;
 }
 
-// Alias mantido para compatibilidade com código existente
 const getKenneyFrame = getMicroFrame;
 
-export { loadKenneySprites, getMicroFrame, getKenneyFrame };
+// ─── Toon Characters (Kenney) ─────────────────────────────────────────────────
+
+function loadToonSprites(scene) {
+  const base = '/assets/sprites/kenney_toon';
+
+  scene.load.image('toon_player_idle', `${base}/player_idle.png`);
+  for (let i = 0; i < 4; i++) scene.load.image(`toon_player_walk${i}`, `${base}/player_walk${i}.png`);
+
+  scene.load.image('toon_enemy_normal_idle', `${base}/enemy_normal_idle.png`);
+  for (let i = 0; i < 4; i++) scene.load.image(`toon_enemy_normal_walk${i}`, `${base}/enemy_normal_walk${i}.png`);
+
+  scene.load.image('toon_enemy_fast_idle', `${base}/enemy_fast_idle.png`);
+  for (let i = 0; i < 3; i++) scene.load.image(`toon_enemy_fast_run${i}`, `${base}/enemy_fast_run${i}.png`);
+
+  scene.load.image('toon_enemy_tank_idle', `${base}/enemy_tank_idle.png`);
+  for (let i = 0; i < 4; i++) scene.load.image(`toon_enemy_tank_walk${i}`, `${base}/enemy_tank_walk${i}.png`);
+
+  scene.load.image('toon_enemy_elite_idle', `${base}/enemy_elite_idle.png`);
+  for (let i = 0; i < 4; i++) scene.load.image(`toon_enemy_elite_walk${i}`, `${base}/enemy_elite_walk${i}.png`);
+}
+
+function createToonAnims(scene) {
+  scene.anims.create({
+    key: 'toon_player_walk',
+    frames: [0,1,2,3].map(i => ({ key: `toon_player_walk${i}` })),
+    frameRate: 8, repeat: -1,
+  });
+  scene.anims.create({
+    key: 'toon_player_idle',
+    frames: [{ key: 'toon_player_idle' }],
+    frameRate: 1, repeat: -1,
+  });
+
+  scene.anims.create({
+    key: 'toon_enemy_normal_walk',
+    frames: [0,1,2,3].map(i => ({ key: `toon_enemy_normal_walk${i}` })),
+    frameRate: 7, repeat: -1,
+  });
+  scene.anims.create({
+    key: 'toon_enemy_normal_idle',
+    frames: [{ key: 'toon_enemy_normal_idle' }],
+    frameRate: 1, repeat: -1,
+  });
+
+  scene.anims.create({
+    key: 'toon_enemy_fast_walk',
+    frames: [0,1,2].map(i => ({ key: `toon_enemy_fast_run${i}` })),
+    frameRate: 12, repeat: -1,
+  });
+  scene.anims.create({
+    key: 'toon_enemy_fast_idle',
+    frames: [{ key: 'toon_enemy_fast_idle' }],
+    frameRate: 1, repeat: -1,
+  });
+
+  scene.anims.create({
+    key: 'toon_enemy_tank_walk',
+    frames: [0,1,2,3].map(i => ({ key: `toon_enemy_tank_walk${i}` })),
+    frameRate: 4, repeat: -1,
+  });
+  scene.anims.create({
+    key: 'toon_enemy_tank_idle',
+    frames: [{ key: 'toon_enemy_tank_idle' }],
+    frameRate: 1, repeat: -1,
+  });
+
+  scene.anims.create({
+    key: 'toon_enemy_elite_walk',
+    frames: [0,1,2,3].map(i => ({ key: `toon_enemy_elite_walk${i}` })),
+    frameRate: 6, repeat: -1,
+  });
+  scene.anims.create({
+    key: 'toon_enemy_elite_idle',
+    frames: [{ key: 'toon_enemy_elite_idle' }],
+    frameRate: 1, repeat: -1,
+  });
+}
+
+export { loadKenneySprites, getMicroFrame, getKenneyFrame, loadToonSprites, createToonAnims };
