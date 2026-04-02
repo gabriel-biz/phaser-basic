@@ -5,21 +5,29 @@ const ENEMY_TYPES = {
     size: 28, color: 0xe53935,
     speed: 90,  hp: 3,  xp: 20, damage: 1,
     showHpBar: false,
+    assetKey: 'enemy_normal',
+    scale: 1.5,
   },
   fast: {
     size: 16, color: 0xff9800,
     speed: 170, hp: 1,  xp: 15, damage: 1,
     showHpBar: false,
+    assetKey: 'enemy_fast',
+    scale: 1.2,
   },
   tank: {
     size: 42, color: 0x7b1fa2,
     speed: 38,  hp: 10, xp: 60, damage: 2,
     showHpBar: true,
+    assetKey: 'enemy_tank',
+    scale: 2,
   },
   elite: {
     size: 36, color: 0xffd600,
     speed: 62,  hp: 15, xp: 120, damage: 2,
     showHpBar: true,
+    assetKey: 'enemy_elite',
+    scale: 1.8,
   },
 };
 
@@ -45,25 +53,8 @@ class Enemy {
     this.alive   = true;
     this._isKnockedBack = false;
 
-    // Gera textura por tipo uma única vez
-    const textureKey = `enemy_${typeName}`;
-    if (!scene.textures.exists(textureKey)) {
-      const gfx = scene.add.graphics();
-      // Elite tem borda dourada
-      if (typeName === 'elite') {
-        gfx.fillStyle(def.color, 1);
-        gfx.fillRect(2, 2, def.size - 4, def.size - 4);
-        gfx.lineStyle(2, 0xffffff, 1);
-        gfx.strokeRect(1, 1, def.size - 2, def.size - 2);
-      } else {
-        gfx.fillStyle(def.color, 1);
-        gfx.fillRect(0, 0, def.size, def.size);
-      }
-      gfx.generateTexture(textureKey, def.size, def.size);
-      gfx.destroy();
-    }
-
-    this.sprite = scene.physics.add.sprite(x, y, textureKey);
+    this.sprite = scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame(def.assetKey));
+    this.sprite.setScale(def.scale);
 
     // Barra de HP para tipos com showHpBar
     if (def.showHpBar) {

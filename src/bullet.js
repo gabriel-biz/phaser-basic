@@ -21,20 +21,7 @@ class Bullet {
     this.distanceTraveled = 0;
     this.alive = true;
 
-    // Gera textura circular uma única vez
-    if (!scene.textures.exists('bullet')) {
-      const gfx = scene.add.graphics();
-      gfx.fillStyle(BULLET_CONFIG.color, 1);
-      gfx.fillCircle(
-        BULLET_CONFIG.size,
-        BULLET_CONFIG.size,
-        BULLET_CONFIG.size,
-      );
-      gfx.generateTexture('bullet', BULLET_CONFIG.size * 2, BULLET_CONFIG.size * 2);
-      gfx.destroy();
-    }
-
-    this.sprite = scene.physics.add.sprite(x, y, 'bullet');
+    this.sprite = scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame('bullet'));
     this.sprite.body.setVelocity(dx * speed, dy * speed);
 
     // Guarda a posição de origem para calcular distância percorrida

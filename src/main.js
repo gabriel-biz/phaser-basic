@@ -1,15 +1,40 @@
+import 'phaser';
+
+import { loadKenneySprites } from './kenney.js';
+import { preloadAllAssets } from './assets.js';
+import { StatsTracker } from './stats.js';
+import { CombatSystem } from './combat.js';
+import { Player } from './player.js';
+import { Enemy, EnemyManager, ENEMY_TYPES } from './enemy.js';
+import { XPSystem } from './xp.js';
+import { Spawner } from './spawner.js';
+import { Bullet, BulletManager } from './bullet.js';
+import { CollisionManager } from './collision.js';
+import { UpgradeMenu } from './upgrades.js';
+import { StartScene } from './start.js';
+import { ControlsScene } from './controls.js';
+import { GameOverScene } from './gameover.js';
+
 class MainScene extends Phaser.Scene {
   constructor() {
     super({ key: 'MainScene' });
   }
 
   create() {
+    loadKenneySprites(this);
+    this.load.start();
+
+    this.load.once('complete', () => {
+      preloadAllAssets(this);
+      this._initGame();
+    });
+  }
+
+  _initGame() {
     const { width, height } = this.scale;
 
-    // ─── Fundo com grid ───────────────────────────────────────────────────────
     this._drawBackground(width, height);
 
-    // ─── Sistemas ─────────────────────────────────────────────────────────────
     this.stats = new StatsTracker();
     this.player = new Player(this, width / 2, height / 2);
     this.enemyManager = new EnemyManager(this);
@@ -23,41 +48,32 @@ class MainScene extends Phaser.Scene {
       this, this.player, this.enemyManager, this.bulletManager, this.xpSystem,
     );
 
-    // ─── Eventos ──────────────────────────────────────────────────────────────
     this.events.on('enemy-killed', () => this.stats.addKill());
 
     this.events.on('levelup', (level) => {
       CombatSystem.slowMotion(this, 0.25, 600);
       this.upgradeMenu.open();
-      // Flash XP bar no level-up
       this.tweens.add({
         targets: this._xpBar, alpha: 0.1, duration: 120,
         yoyo: true, repeat: 2, onComplete: () => this._xpBar.setAlpha(1),
       });
     });
 
-    // ─── HUD ──────────────────────────────────────────────────────────────────
     this._buildHud(width, height);
   }
-
-  // ─── Fundo com grid ─────────────────────────────────────────────────────────
 
   _drawBackground(w, h) {
     const bg = this.add.graphics();
     bg.fillGradientStyle(0x0f0c29, 0x0f0c29, 0x1a1040, 0x1a1040, 1);
     bg.fillRect(0, 0, w, h);
 
-    // Grid sutil
     bg.lineStyle(1, 0x222244, 0.4);
     const step = 40;
     for (let x = 0; x <= w; x += step) bg.lineBetween(x, 0, x, h);
     for (let y = 0; y <= h; y += step) bg.lineBetween(0, y, w, y);
   }
 
-  // ─── HUD ────────────────────────────────────────────────────────────────────
-
   _buildHud(width, height) {
-    // Painel esquerdo — HP e XP
     this._hpLabel = this.add.text(16, 16, '', {
       fontSize: '14px', fontFamily: 'Arial', color: '#ffffff',
     });
@@ -68,7 +84,6 @@ class MainScene extends Phaser.Scene {
     });
     this._xpBar = this.add.graphics();
 
-    // Painel direito — wave e tempo
     this._waveLabel = this.add.text(width - 16, 16, '', {
       fontSize: '14px', fontFamily: 'Arial', color: '#ffffff',
     }).setOrigin(1, 0);
@@ -102,12 +117,9 @@ class MainScene extends Phaser.Scene {
     this._xpBar.fillRect(16, 68, 130 * ratio, 7);
   }
 
-  // ─── Update ─────────────────────────────────────────────────────────────────
-
   update() {
     if (this._upgrading) return;
 
-    // ── Game Over ──────────────────────────────────────────────────────────
     if (this.player.hp <= 0) {
       this.scene.start('GameOverScene', {
         kills: this.stats.kills,
@@ -123,7 +135,6 @@ class MainScene extends Phaser.Scene {
     this.bulletManager.update(this.player.sprite, this.enemyManager.enemies);
     this.collisionManager.update();
 
-    // ── HUD ────────────────────────────────────────────────────────────────
     const { hp, maxHp } = this.player;
     const { level, xp, xpToNext } = this.xpSystem;
 
@@ -137,8 +148,6 @@ class MainScene extends Phaser.Scene {
     this._killLabel.setText(`${this.stats.kills} mortes`);
   }
 }
-
-// ─── Phaser Config ────────────────────────────────────────────────────────────
 
 const config = {
   type: Phaser.AUTO,

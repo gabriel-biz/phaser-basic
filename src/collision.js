@@ -12,11 +12,35 @@ class CollisionManager {
     this.enemyManager  = enemyManager;
     this.bulletManager = bulletManager;
     this.xpSystem      = xpSystem;
+    this._xpOrbs       = [];
   }
 
   update() {
     this._bulletsVsEnemies();
     this._enemiesVsPlayer();
+    this._updateXpOrbs();
+  }
+
+  // ─── Moedas XP ───────────────────────────────────────────────────────────────
+
+  _spawnXpOrb(x, y, value) {
+    const orb = this.scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame('coin'));
+    
+    orb.setVelocity(
+      Phaser.Math.Between(-80, 80),
+      Phaser.Math.Between(-80, 80)
+    );
+    
+    this.scene.physics.add.overlap(orb, this.player.sprite, () => {
+      this.xpSystem.addXp(value);
+      orb.destroy();
+    });
+    
+    this._xpOrbs.push(orb);
+  }
+
+  _updateXpOrbs() {
+    this._xpOrbs = this._xpOrbs.filter(orb => orb.active);
   }
 
   // ─── Bala × Inimigo ─────────────────────────────────────────────────────────
@@ -52,7 +76,7 @@ class CollisionManager {
         const died = enemy.takeDamage(damage);
 
         if (died) {
-          this.xpSystem.addXp(enemy.xpValue);
+          this._spawnXpOrb(enemy.sprite.x, enemy.sprite.y, enemy.xpValue);
           this.scene.events.emit('enemy-killed');
           CombatSystem.screenShake(this.scene, isCrit || enemy.typeName === 'elite' ? 'medium' : 'light');
         } else {

@@ -16,16 +16,9 @@ class Player {
     this.scene = scene;
     this.speed = PLAYER_CONFIG.speed;
 
-    // Cria o quadrado usando Graphics e gera uma textura a partir dele
-    const gfx = scene.add.graphics();
-    gfx.fillStyle(PLAYER_CONFIG.color, 1);
-    gfx.fillRect(0, 0, PLAYER_CONFIG.size, PLAYER_CONFIG.size);
-    gfx.generateTexture('player', PLAYER_CONFIG.size, PLAYER_CONFIG.size);
-    gfx.destroy();
-
-    // Sprite com física arcade usando a textura gerada
-    this.sprite = scene.physics.add.sprite(x, y, 'player');
+    this.sprite = scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame('player'));
     this.sprite.setCollideWorldBounds(true);
+    this.sprite.setScale(2);
 
     this.hp = PLAYER_CONFIG.maxHp;
     this.maxHp = PLAYER_CONFIG.maxHp;
@@ -60,6 +53,20 @@ class Player {
 
     this.hp = Math.max(0, this.hp - amount);
     this.invincible = true;
+
+    // Efeito visual de dano
+    const dmgRing = this.scene.add.graphics();
+    dmgRing.lineStyle(3, 0xff0000, 0.8);
+    dmgRing.strokeCircle(this.sprite.x, this.sprite.y, 24);
+    
+    this.scene.tweens.add({
+      targets: dmgRing,
+      scaleX: 2.5,
+      scaleY: 2.5,
+      alpha: 0,
+      duration: 400,
+      onComplete: () => dmgRing.destroy(),
+    });
 
     // Pisca o sprite durante o período de invencibilidade
     this.scene.tweens.add({
