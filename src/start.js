@@ -80,3 +80,5 @@ class StartScene extends Phaser.Scene {
     }).setOrigin(0.5);
   }
 }
+
+export { StartScene };

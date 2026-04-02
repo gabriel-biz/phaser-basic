@@ -1,3 +1,5 @@
+import { getMicroFrame } from './kenney.js';
+
 const PLAYER_CONFIG = {
   size: 32,
   color: 0x4fc3f7,
@@ -16,9 +18,10 @@ class Player {
     this.scene = scene;
     this.speed = PLAYER_CONFIG.speed;
 
-    this.sprite = scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame('player'));
+    // Tiles micro-roguelike têm 8×8px; scale 4 → tamanho visual 32×32px
+    this.sprite = scene.physics.add.sprite(x, y, 'micro', getMicroFrame('player'));
     this.sprite.setCollideWorldBounds(true);
-    this.sprite.setScale(2);
+    this.sprite.setScale(4);
 
     this.hp = PLAYER_CONFIG.maxHp;
     this.maxHp = PLAYER_CONFIG.maxHp;
@@ -100,3 +103,5 @@ class Player {
     }
   }
 }
+
+export { Player, PLAYER_CONFIG };

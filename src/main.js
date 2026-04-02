@@ -48,6 +48,12 @@ class MainScene extends Phaser.Scene {
       this, this.player, this.enemyManager, this.bulletManager, this.xpSystem,
     );
 
+    this._paused       = false;
+    this._pauseOverlay = null;
+
+    this._escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    this._escKey.on('down', () => this._togglePause());
+
     this.events.on('enemy-killed', () => this.stats.addKill());
 
     this.events.on('levelup', (level) => {
@@ -71,6 +77,56 @@ class MainScene extends Phaser.Scene {
     const step = 40;
     for (let x = 0; x <= w; x += step) bg.lineBetween(x, 0, x, h);
     for (let y = 0; y <= h; y += step) bg.lineBetween(0, y, w, y);
+  }
+
+  _togglePause() {
+    if (!this.player) return;
+    if (this._upgrading) return; // não pausa durante seleção de upgrade
+
+    if (this._paused) {
+      this._paused = false;
+      this.physics.world.resume();
+      this.stats.resume();
+      this._hidePauseOverlay();
+    } else {
+      this._paused = true;
+      this.physics.world.pause();
+      this.stats.pause();
+      this._showPauseOverlay();
+    }
+  }
+
+  _showPauseOverlay() {
+    const { width, height } = this.scale;
+    this._pauseOverlay = this.add.container(0, 0);
+
+    const overlay = this.add.graphics();
+    overlay.fillStyle(0x000000, 0.7);
+    overlay.fillRect(0, 0, width, height);
+    this._pauseOverlay.add(overlay);
+
+    const title = this.add.text(width / 2, height / 2 - 50, 'PAUSADO', {
+      fontSize: '48px',
+      fontFamily: 'Arial',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 6,
+    }).setOrigin(0.5);
+    this._pauseOverlay.add(title);
+
+    const hint = this.add.text(width / 2, height / 2 + 20, 'Pressione ESC para continuar', {
+      fontSize: '16px',
+      fontFamily: 'Arial',
+      color: '#aaaacc',
+    }).setOrigin(0.5);
+    this._pauseOverlay.add(hint);
+  }
+
+  _hidePauseOverlay() {
+    if (this._pauseOverlay) {
+      this._pauseOverlay.destroy();
+      this._pauseOverlay = null;
+    }
   }
 
   _buildHud(width, height) {
@@ -118,6 +174,8 @@ class MainScene extends Phaser.Scene {
   }
 
   update() {
+    if (!this.player) return; // aguarda _initGame() após carregamento dos assets
+    if (this._paused) return;
     if (this._upgrading) return;
 
     if (this.player.hp <= 0) {

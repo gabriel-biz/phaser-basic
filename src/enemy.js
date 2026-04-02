@@ -1,4 +1,7 @@
+import { getMicroFrame } from './kenney.js';
+
 // ─── Tipos de inimigos ────────────────────────────────────────────────────────
+// Tiles micro-roguelike: 8×8px → scale dobrado em relação aos sprites 16×16 antigos
 
 const ENEMY_TYPES = {
   normal: {
@@ -6,28 +9,28 @@ const ENEMY_TYPES = {
     speed: 90,  hp: 3,  xp: 20, damage: 1,
     showHpBar: false,
     assetKey: 'enemy_normal',
-    scale: 1.5,
+    scale: 3,    // 8px × 3 = 24px visual
   },
   fast: {
     size: 16, color: 0xff9800,
     speed: 170, hp: 1,  xp: 15, damage: 1,
     showHpBar: false,
     assetKey: 'enemy_fast',
-    scale: 1.2,
+    scale: 2.4,  // 8px × 2.4 ≈ 19px visual
   },
   tank: {
     size: 42, color: 0x7b1fa2,
     speed: 38,  hp: 10, xp: 60, damage: 2,
     showHpBar: true,
     assetKey: 'enemy_tank',
-    scale: 2,
+    scale: 4,    // 8px × 4 = 32px visual
   },
   elite: {
     size: 36, color: 0xffd600,
     speed: 62,  hp: 15, xp: 120, damage: 2,
     showHpBar: true,
     assetKey: 'enemy_elite',
-    scale: 1.8,
+    scale: 3.6,  // 8px × 3.6 = 29px visual
   },
 };
 
@@ -53,7 +56,8 @@ class Enemy {
     this.alive   = true;
     this._isKnockedBack = false;
 
-    this.sprite = scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame(def.assetKey));
+    // Tiles micro-roguelike: 8×8px, scale em ENEMY_TYPES compensa o tamanho
+    this.sprite = scene.physics.add.sprite(x, y, 'micro', getMicroFrame(def.assetKey));
     this.sprite.setScale(def.scale);
 
     // Barra de HP para tipos com showHpBar
@@ -214,3 +218,5 @@ class EnemyManager {
     return this.enemies.map(e => e.sprite);
   }
 }
+
+export { Enemy, EnemyManager, ENEMY_TYPES };

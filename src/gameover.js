@@ -103,3 +103,5 @@ class GameOverScene extends Phaser.Scene {
     return btn;
   }
 }
+
+export { GameOverScene };

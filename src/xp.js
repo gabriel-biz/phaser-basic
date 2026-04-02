@@ -54,3 +54,5 @@ class XPSystem {
     return Math.floor(XP_CONFIG.baseXp * Math.pow(level, XP_CONFIG.exponent));
   }
 }
+
+export { XPSystem, XP_CONFIG };

@@ -1,3 +1,6 @@
+import { CombatSystem } from './combat.js';
+import { getMicroFrame } from './kenney.js';
+
 class CollisionManager {
   /**
    * @param {Phaser.Scene}  scene
@@ -24,7 +27,9 @@ class CollisionManager {
   // ─── Moedas XP ───────────────────────────────────────────────────────────────
 
   _spawnXpOrb(x, y, value) {
-    const orb = this.scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame('coin'));
+    // Tile micro-roguelike: lanterna dourada (frame 39) como orbe de XP
+    const orb = this.scene.physics.add.sprite(x, y, 'micro', getMicroFrame('coin'));
+    orb.setScale(2);
     
     orb.setVelocity(
       Phaser.Math.Between(-80, 80),
@@ -107,3 +112,5 @@ class CollisionManager {
     }
   }
 }
+
+export { CollisionManager };

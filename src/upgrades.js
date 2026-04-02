@@ -207,3 +207,5 @@ class UpgradeMenu {
     this._container = null;
   }
 }
+
+export { UpgradeMenu };

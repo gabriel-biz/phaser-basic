@@ -127,3 +127,5 @@ function preloadAllAssets(scene) {
     generateAsset(scene, name);
   }
 }
+
+export { generateAsset, preloadAllAssets, ASSETS };

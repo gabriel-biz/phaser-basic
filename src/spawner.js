@@ -105,3 +105,5 @@ class Spawner {
     }
   }
 }
+
+export { Spawner, SPAWNER_CONFIG };

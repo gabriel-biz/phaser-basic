@@ -1,3 +1,5 @@
+import { getMicroFrame } from './kenney.js';
+
 const BULLET_CONFIG = {
   size: 6,
   color: 0xffd54f,
@@ -21,7 +23,9 @@ class Bullet {
     this.distanceTraveled = 0;
     this.alive = true;
 
-    this.sprite = scene.physics.add.sprite(x, y, 'kenney', getKenneyFrame('bullet'));
+    // Tile micro-roguelike 8×8px; scale 2 → tamanho visual 16×16px
+    this.sprite = scene.physics.add.sprite(x, y, 'micro', getMicroFrame('bullet'));
+    this.sprite.setScale(2);
     this.sprite.body.setVelocity(dx * speed, dy * speed);
 
     // Guarda a posição de origem para calcular distância percorrida
@@ -148,3 +152,5 @@ class BulletManager {
     return this.bullets.map(b => b.sprite);
   }
 }
+
+export { Bullet, BulletManager };

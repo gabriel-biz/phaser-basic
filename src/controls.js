@@ -152,3 +152,5 @@ class ControlsScene extends Phaser.Scene {
     }
   }
 }
+
+export { ControlsScene };

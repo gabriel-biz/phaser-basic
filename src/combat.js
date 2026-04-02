@@ -108,3 +108,5 @@ class CombatSystem {
     });
   }
 }
+
+export { CombatSystem, COMBAT_CONFIG };

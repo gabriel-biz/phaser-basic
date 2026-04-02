@@ -1,14 +1,29 @@
 class StatsTracker {
   constructor() {
-    this.kills     = 0;
-    this.startTime = Date.now();
+    this.kills        = 0;
+    this.startTime    = Date.now();
+    this._pausedAt    = null;
+    this._pausedTotal = 0; // ms acumulados pausado
   }
 
   addKill() { this.kills++; }
 
-  /** Segundos decorridos desde o início da partida. */
+  pause() {
+    if (this._pausedAt === null) {
+      this._pausedAt = Date.now();
+    }
+  }
+
+  resume() {
+    if (this._pausedAt !== null) {
+      this._pausedTotal += Date.now() - this._pausedAt;
+      this._pausedAt = null;
+    }
+  }
+
+  /** Segundos decorridos desde o início da partida, excluindo tempo pausado. */
   get elapsedSeconds() {
-    return Math.floor((Date.now() - this.startTime) / 1000);
+    return Math.floor((Date.now() - this.startTime - this._pausedTotal) / 1000);
   }
 
   /** Tempo no formato "M:SS". */
@@ -19,3 +34,5 @@ class StatsTracker {
     return `${m}:${ss}`;
   }
 }
+
+export { StatsTracker };
