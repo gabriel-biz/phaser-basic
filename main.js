@@ -10,14 +10,14 @@ class MainScene extends Phaser.Scene {
     this._drawBackground(width, height);
 
     // ─── Sistemas ─────────────────────────────────────────────────────────────
-    this.stats         = new StatsTracker();
-    this.player        = new Player(this, width / 2, height / 2);
-    this.enemyManager  = new EnemyManager(this);
-    this.spawner       = new Spawner(this, this.enemyManager);
+    this.stats = new StatsTracker();
+    this.player = new Player(this, width / 2, height / 2);
+    this.enemyManager = new EnemyManager(this);
+    this.spawner = new Spawner(this, this.enemyManager);
     this.bulletManager = new BulletManager(this);
-    this.xpSystem      = new XPSystem(this);
-    this._upgrading    = false;
-    this.upgradeMenu   = new UpgradeMenu(this, this.player, this.bulletManager);
+    this.xpSystem = new XPSystem(this);
+    this._upgrading = false;
+    this.upgradeMenu = new UpgradeMenu(this, this.player, this.bulletManager);
 
     this.collisionManager = new CollisionManager(
       this, this.player, this.enemyManager, this.bulletManager, this.xpSystem,
@@ -111,9 +111,9 @@ class MainScene extends Phaser.Scene {
     if (this.player.hp <= 0) {
       this.scene.start('GameOverScene', {
         kills: this.stats.kills,
-        time:  this.stats.timeFormatted,
+        time: this.stats.timeFormatted,
         level: this.xpSystem.level,
-        wave:  this.spawner.wave,
+        wave: this.spawner.wave,
       });
       return;
     }
@@ -124,7 +124,7 @@ class MainScene extends Phaser.Scene {
     this.collisionManager.update();
 
     // ── HUD ────────────────────────────────────────────────────────────────
-    const { hp, maxHp }         = this.player;
+    const { hp, maxHp } = this.player;
     const { level, xp, xpToNext } = this.xpSystem;
 
     this._hpLabel.setText(`HP  ${hp} / ${maxHp}`);
@@ -141,15 +141,15 @@ class MainScene extends Phaser.Scene {
 // ─── Phaser Config ────────────────────────────────────────────────────────────
 
 const config = {
-  type:            Phaser.AUTO,
-  width:           800,
-  height:          600,
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
   backgroundColor: '#0f0c29',
   physics: {
     default: 'arcade',
-    arcade:  { debug: false },
+    arcade: { debug: false },
   },
-  scene: [StartScene, MainScene, GameOverScene],
+  scene: [StartScene, ControlsScene, MainScene, GameOverScene],
   parent: document.body,
 };
 

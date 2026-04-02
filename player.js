@@ -27,18 +27,28 @@ class Player {
     this.sprite = scene.physics.add.sprite(x, y, 'player');
     this.sprite.setCollideWorldBounds(true);
 
-    this.hp         = PLAYER_CONFIG.maxHp;
-    this.maxHp      = PLAYER_CONFIG.maxHp;
+    this.hp = PLAYER_CONFIG.maxHp;
+    this.maxHp = PLAYER_CONFIG.maxHp;
     this.invincible = false;
     this.critChance = 0.12; // pode ser aumentado por upgrades
 
-    // Captura as teclas WASD
-    this.keys = scene.input.keyboard.addKeys({
-      up:    Phaser.Input.Keyboard.KeyCodes.W,
-      down:  Phaser.Input.Keyboard.KeyCodes.S,
-      left:  Phaser.Input.Keyboard.KeyCodes.A,
-      right: Phaser.Input.Keyboard.KeyCodes.D,
-    });
+    // Captura as teclas conforme o esquema escolhido na tela de controles
+    const scheme = window.CONTROL_SCHEME || 'wasd';
+    if (scheme === 'arrows') {
+      this.keys = scene.input.keyboard.addKeys({
+        up: Phaser.Input.Keyboard.KeyCodes.UP,
+        down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+        left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+        right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      });
+    } else {
+      this.keys = scene.input.keyboard.addKeys({
+        up: Phaser.Input.Keyboard.KeyCodes.W,
+        down: Phaser.Input.Keyboard.KeyCodes.S,
+        left: Phaser.Input.Keyboard.KeyCodes.A,
+        right: Phaser.Input.Keyboard.KeyCodes.D,
+      });
+    }
   }
 
   /**
@@ -72,10 +82,10 @@ class Player {
     // Zera a velocidade antes de recalcular
     body.setVelocity(0);
 
-    if (left.isDown)  body.setVelocityX(-this.speed);
+    if (left.isDown) body.setVelocityX(-this.speed);
     if (right.isDown) body.setVelocityX(this.speed);
-    if (up.isDown)    body.setVelocityY(-this.speed);
-    if (down.isDown)  body.setVelocityY(this.speed);
+    if (up.isDown) body.setVelocityY(-this.speed);
+    if (down.isDown) body.setVelocityY(this.speed);
 
     // Normaliza a diagonal para não ser mais rápida que os eixos
     if (body.velocity.x !== 0 && body.velocity.y !== 0) {
