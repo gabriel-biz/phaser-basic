@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arena Rogue</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f0c29;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Vinheta: escurece as bordas sem afetar a interação com o canvas */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 55%,
+        rgba(0, 0, 0, 0.65) 100%
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <!-- Utilitários e sistemas (sem dependências entre si) -->
+  <script src="stats.js"></script>
+  <script src="combat.js"></script>
+
+  <!-- Entidades do jogo -->
+  <script src="player.js"></script>
+  <script src="enemy.js"></script>
+  <script src="xp.js"></script>
+  <script src="spawner.js"></script>
+  <script src="bullet.js"></script>
+
+  <!-- Lógica de alto nível -->
+  <script src="collision.js"></script>
+  <script src="upgrades.js"></script>
+
+  <!-- Cenas (devem ser definidas antes do main.js criar o config) -->
+  <script src="start.js"></script>
+  <script src="gameover.js"></script>
+
+  <!-- Ponto de entrada — cria o Phaser.Game -->
+  <script src="main.js"></script>
+</body>
+</html>
